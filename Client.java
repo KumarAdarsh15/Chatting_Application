@@ -12,6 +12,7 @@ import java.net.Socket;
 
 public class Client {
     private JFrame clientFrame;
+    private JLabel heading;
     private JTextField textField;
     private JScrollPane scrollPane;
     private JTextArea textArea;
@@ -19,25 +20,40 @@ public class Client {
     String ip_address;
     private DataInputStream dis;
     private DataOutputStream dos;
-    Thread thread = new Thread() {
-        public void run() {
-            while (true) {
+
+    // Thread for reading server messages continuously
+    Thread thread = new Thread(){
+        public void run(){
+            while (true){
                 readMessage();
             }
         }
     };
 
-    Client() {
-        ip_address = JOptionPane.showInputDialog("IP ADDRESS");
+    public Client() {
+        initializeGUI();  // Initialize the graphical user interface
+    }
+
+    // Method to initialize the graphical user interface
+    private void initializeGUI(){
+        ip_address = JOptionPane.showInputDialog("IP ADDRESS");  // Prompt for server IP address
 
         if (ip_address != null) {
             if (ip_address.equals("")) {
-                JOptionPane.showMessageDialog(clientFrame, "Enter IP ADDRESS");
+                JOptionPane.showMessageDialog(clientFrame, "Enter IP ADDRESS");  // Show an error message if no IP address is provided
             } else {
-                connectToServer();
-                clientFrame = new JFrame("CLIENT");
+                connectToServer();  // Establish a connection to the server
+                clientFrame = new JFrame("MESSENGER");
                 clientFrame.setSize(500, 500);
-                clientFrame.setLocationRelativeTo(null);    // Center the frame on the screen
+                ImageIcon image=new ImageIcon("D:\\IntelliJ IDEA\\Chatting Application\\src\\icons_chat.png");
+                clientFrame.setIconImage(image.getImage());
+                clientFrame.setLocationRelativeTo(null);
+
+                heading = new JLabel("Client");
+                heading.setHorizontalAlignment(SwingConstants.CENTER);
+                heading.setFont(new Font("",Font.PLAIN,20));
+                heading.setBorder(BorderFactory.createEmptyBorder(20,20,20,20));
+                clientFrame.add(heading, BorderLayout.NORTH);
 
                 textArea = new JTextArea();
                 textArea.setFont(new Font("", Font.PLAIN, 15));
@@ -47,6 +63,7 @@ public class Client {
                 clientFrame.add(scrollPane);
 
                 textField = new JTextField();
+                textField.setFont(new Font("",Font.PLAIN,15));
                 textField.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
@@ -63,6 +80,7 @@ public class Client {
         }
     }
 
+    // Method to establish a connection to the server
     public void connectToServer() {
         try {
             socket = new Socket(ip_address, 1234);
@@ -71,6 +89,7 @@ public class Client {
         }
     }
 
+    // Method to set up input and output streams for communication
     public void setIOStreams() {
         try {
             dis = new DataInputStream(socket.getInputStream());
@@ -78,9 +97,10 @@ public class Client {
         } catch (Exception e) {
             System.out.println(e);
         }
-        thread.start();
+        thread.start();  // Start the message reading thread
     }
 
+    // Method to send a message to the server
     public void sendMessage(String message) {
         try {
             dos.writeUTF(message);
@@ -90,6 +110,7 @@ public class Client {
         }
     }
 
+    // Method to read and display a message from the server
     public void readMessage() {
         try {
             String message = dis.readUTF();
@@ -99,10 +120,13 @@ public class Client {
         }
     }
 
+    // Method to display a message in the text area
     public void showMessage(String message) {
         textArea.append("Server: " + message + "\n");
         chatSound();
     }
+
+    // Method to play a chat sound
     public void chatSound() {
         try {
             File file = new File("D:\\IntelliJ IDEA\\Chatting Application\\src\\chat_sound.wav");
