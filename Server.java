@@ -88,7 +88,7 @@ public class Server {
             textField.setEditable(true);
             setIOStreams();
         } catch (Exception e) {
-            System.out.println(e);
+            showError("Error in starting the server: " + e.getMessage());
         }
     }
 
@@ -99,7 +99,7 @@ public class Server {
             inetAddress = InetAddress.getLocalHost();
             ip_address = inetAddress.getHostAddress();
         } catch (Exception e) {
-            System.out.println(e);
+            showError("Error in getting IP address: " + e.getMessage());
         }
         return ip_address;
     }
@@ -110,7 +110,7 @@ public class Server {
             dis = new DataInputStream(socket.getInputStream());
             dos = new DataOutputStream(socket.getOutputStream());
         } catch (Exception e) {
-            System.out.println(e);
+            showError("Error in setting up IO streams: " + e.getMessage());
         }
         thread.start(); // Start the thread for reading messages
     }
@@ -121,7 +121,7 @@ public class Server {
             dos.writeUTF(message);
             dos.flush();
         } catch (Exception e) {
-            System.out.println(e);
+            showError("Error in sending message: " + e.getMessage());
         }
     }
 
@@ -131,7 +131,7 @@ public class Server {
             String message = dis.readUTF();
             showMessage(message);
         } catch (Exception e) {
-            System.out.println(e);
+            showError("Error in reading message: " + e.getMessage());
         }
     }
 
@@ -151,7 +151,11 @@ public class Server {
             clip.open(audioInputStream);
             clip.start();
         } catch (Exception e) {
-            System.out.println(e);
+            showError("Error playing chat sound: " + e.getMessage());
         }
+    }
+    public void showError(String message) {
+        JOptionPane.showMessageDialog(serverFrame, message, "Error", JOptionPane.ERROR_MESSAGE);
+        System.exit(0);
     }
 }
