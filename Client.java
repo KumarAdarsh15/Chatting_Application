@@ -85,7 +85,7 @@ public class Client {
         try {
             socket = new Socket(ip_address, 1234);
         } catch (Exception e) {
-            System.out.println(e);
+            showError("Error in getting IP address: " + e.getMessage());
         }
     }
 
@@ -95,7 +95,7 @@ public class Client {
             dis = new DataInputStream(socket.getInputStream());
             dos = new DataOutputStream(socket.getOutputStream());
         } catch (Exception e) {
-            System.out.println(e);
+            showError("Error in setting up IO streams: " + e.getMessage());
         }
         thread.start();  // Start the message reading thread
     }
@@ -106,7 +106,7 @@ public class Client {
             dos.writeUTF(message);
             dos.flush();
         } catch (Exception e) {
-            System.out.println(e);
+            showError("Error in sending message: " + e.getMessage());
         }
     }
 
@@ -116,7 +116,7 @@ public class Client {
             String message = dis.readUTF();
             showMessage(message);
         } catch (Exception e) {
-            System.out.println(e);
+            showError("Error in reading message: " + e.getMessage());
         }
     }
 
@@ -135,7 +135,11 @@ public class Client {
             clip.open(audioInputStream);
             clip.start();
         } catch (Exception e) {
-            System.out.println(e);
+            showError("Error playing chat sound: " + e.getMessage());
         }
+    }
+    public void showError(String message) {
+        JOptionPane.showMessageDialog(clientFrame, message, "Error", JOptionPane.ERROR_MESSAGE);
+        System.exit(0);
     }
 }
